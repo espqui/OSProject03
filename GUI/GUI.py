@@ -1,105 +1,203 @@
-
-from tkinter import *
 import tkinter as tk
-from tkinter import ttk
+from tkinter import *
+from tkinter.ttk import *
+from tkinter import IntVar
+from functools import partial
 import numpy as np
-from pandas import DataFrame
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import os
-def pickMovement():
-	if currentPlayer.get()==1:
-		lastMovementVariable.set('Last Movement: Player %d picked %s Position' % (currentPlayer.get(), player1[numberChosen.current()]))
 
-		
-	else:
-		lastMovementVariable.set('Last Movement: Player %d picked %s Position' % (currentPlayer.get(), player2[numberChosen.current()]))
+#####################################################
+#All player's movements are developed in this function
+###################################################
+def playerAction(i,j,event):
+	global pick,pickPos,currentPlayer, board
+	print("pick value",pick)
+	pickAux=pick
+	if(pick==1 and (board[i,j]==1 or board[i,j]==2)):
+	#################################
+	#pick chip in i,j position
+	################################
+		if(board[i,j]==1):
+			currentPlayer=1
+		elif(board[i,j]==2):
+			currentPlayer=2
+		pickPos=(i,j)
+		pick=0
+		board[i,j]=3
+		print("picked",pickPos)
+		update()
+	elif(pick==0 and board[i,j]==3):
+	#################################
+	#drop chip on i,j position
+	################################
+		dropPos=(i,j)
+		pick=1
+		if(currentPlayer==1):
+			board[i,j]=1
+			
+		elif(currentPlayer==2):
+			board[i,j]=2	
+		update()
 
-	
-def dropMovement():
-	
-	if currentPlayer.get()==1:
-		lastMovementVariable.set('Last Movement: Player %d Dropped on %s Position' % (currentPlayer.get(), player1[numberChosen.current()]))
-		currentPlayer.set(2)
-		numberChosen['values'] = player2
-		
-		
-	else:
-		lastMovementVariable.set('Last Movement: Player %d Dropped on %s Position' % (currentPlayer.get(), player2[numberChosen.current()]))
-		currentPlayer.set(1)
-		numberChosen['values'] = player1
-
-def InitCurrentPlayer(currentPlayer):
-	label=ttk.Label(root, text="CurrentPlayer")
-	label.pack()
-	Label(root, textvariable=currentPlayer).pack() 
-	currentPlayer.set(1)
-def lastMovement(lastMovementVariable):
-	Label(root, textvariable=lastMovementVariable).pack()
-	lastMovementVariable.set("Last Movement")  
-
-
-def initBoardParameters(player1,player2,numberChosen,currentPlayer):
-	color=1
-	chessboard=np.zeros((10,10))
-	chessboard[1::2,0::2]=color
-	chessboard[0::2,1::2]=color
-	x1,y1 = zip(*player1)
-	x2,y2 = zip(*player2)
-	figure3 = plt.Figure(figsize=(5,4), dpi=100)
-	ax3 = figure3.add_subplot(111)
-	ax3.imshow(chessboard, cmap='Blues')
-	ax3.scatter(y1,x1, s=200, c='red', marker='o')
-	ax3.scatter(y2,x2, s=200, c='brown', marker='o')
-	scatter3 = FigureCanvasTkAgg(figure3, root) 
-	scatter3.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)	
-	
-	label=ttk.Label(root, text="Position")
-	label.pack()
-	
-	numberChosen['values'] = player1
-	numberChosen.pack()
-	
-	b = Button(root,compound=TOP, text="Pick", command=pickMovement)
-	b.pack()
-	b = Button(root,compound=TOP, text="Drop", command=dropMovement)
-	
-	b.pack()
-
-
-	
-
-def search(player,posXBefore,posYBefore,posXAfter,posYAfter):
-	index_list = [x for x, y in enumerate(player) if y[0] == posXBefore and y[1] == posYBefore ]
-	player[index_list[0]]=(posXAfter,posYAfter)
-	return (player)
+#####################################################
+#Refresh the board when the movement has finished
+###################################################
+def update():
+	global board
+	for i in range(0,10):
+		for j in range(0,10):
+			if board[i,j]==1:
+				buttonPlayer[i*5+j//2].config(image=chip1)
+			elif board[i,j]==2:
+				buttonPlayer[i*5+j//2].config(image=chip2)
+			elif board[i,j]==3:
+				buttonPlayer[i*5+j//2].config(image=chip3)
+			
+#####################################################
+#Look for all empthy spaces  or those with a chip, 
+#the result is shown in the comboBox element.
+#####################################################
+def search(free):
+	global numberChosen,board
+	answer=[]
+	for i in range(0,10):
+		for j in range(0,10):
+			if (board[i,j]==1 or board[i,j]==2) and free==False:
+				answer.append((i,j))
+			elif (board[i,j]==3 and free==True):
+				answer.append((i,j))
+	numberChosen['values'] = answer
 				
-
-def main(args):
-    return 0
-
-if __name__ == '__main__':
-    import sys
-    root= tk.Tk()
-    currentPlayer=IntVar()
-    numberChosen = ttk.Combobox(root, width=12)
-    lastMovementVariable = StringVar()
-    player2=[(6,1),(6,3),(6,5),(6,7),(6,9),
-			(7,0),(7,2),(7,4),(7,6),(7,8),
-			(8,1),(8,3),(8,5),(8,7),(8,9),
-			(9,0),(9,2),(9,4),(9,6),(9,8)] 
-    player1=[(0,1),(0,3),(0,5),(0,7),(0,9),
-			(1,0),(1,2),(1,4),(1,6),(1,8),
-			(2,1),(2,3),(2,5),(2,7),(2,9),
-			(3,0),(3,2),(3,4),(3,6),(3,8)]
+#####################################################
+# This function is called when a player remove a chip 
+# of his opponent and the score is updated
+#####################################################
+def removeChip(i,j,event):
+	global board
+	#################################
+	#remove chip i,j position
+	################################
 	
-    initBoardParameters(player1, player2,numberChosen, currentPlayer)
-    InitCurrentPlayer(currentPlayer)
-    lastMovement(lastMovementVariable)
-    root.mainloop()
-    sys.exit(main(sys.argv))
-   
+	
+	
+	buttonPlayer[i*5+j//2].config(image=chip3)
+	if(board[i,j]==1):
+		print(pointP2.get()+1)
+		pointP2.set(pointP2.get()+1)
+	elif(board[i,j]==2):
+		print(pointP1.get()+1)
+		pointP1.set(pointP1.get()+1)
+	board[i,j]=3
+
+#####################################################
+# Used when the player press the button pick
+#####################################################
+def pickMovement():
+	global pick,dropButton,pickButton
+	pick=1
+	dropButton.config(bg="#d9d9d9")
+	pickButton.config(bg="green")
+	print("picked")
+	search(False)
+#####################################################
+# Used when the player press the button drop
+#####################################################
+def dropMovement():
+	search(True)
+	global pick,dropButton,pickButton
+	pick=0
+	dropButton.config(bg="green")
+	pickButton.config(bg="#d9d9d9")
+	print("dropped")
+	search(True)
+#####################################################
+# Used when the player press the button Move
+#####################################################	
+def move():
+	global dropButton,pickButton
+	dropButton.config(bg="#d9d9d9")
+	pickButton.config(bg="#d9d9d9")
+	playerAction(int(numberChosen.get()[0]),int(numberChosen.get()[2]),0)
+
+	
+root = tk.Tk()
+board=np.zeros([10,10],dtype = int) 
 
 
+#initBoard
+frame1 = tk.Frame(root)
+frame1.pack(side=tk.TOP, fill=tk.X)
+chip1 = tk.PhotoImage(file="chip1.png")#chip of player 1
+chip2 = tk.PhotoImage(file="chip2.png")#chip of player 2
+chip3 = tk.PhotoImage(file="free.png")#empty space
+
+buttonPlayer = list() # Each position on the board is a button
+pick=1#0drop, 1, pick, -1 invalid field was selected
+pickPos=(0,0)
+currentPlayer=True
+pointP1 = IntVar()
+pointP2 = IntVar()
+pointP1.set(0)
+pointP2.set(0)
+tk.Label(frame1, text=' Points:', width=10).grid(row=5,column=10)
+tk.Label(frame1, text=' Player1:', width=10).grid(row=6,column=10)
+tk.Label(frame1, textvariable =pointP1, width=5).grid(row=6,column=11)
+tk.Label(frame1, text=' Player2', width=10).grid(row=7,column=10)
+tk.Label(frame1, textvariable =pointP2, width=5).grid(row=7,column=11)
+numberChosen = tk.ttk.Combobox(frame1, width=12)
+
+#Create the board#
+for i in range(0,10):
+	for j in range(0,10):
+		if i%2==0:
+			if j%2 ==1:
+				buttonPlayer.append(tk.Button(frame1, image=chip3))
+				buttonPlayer[-1].bind('<Button-1>', partial(playerAction, i,j))
+				buttonPlayer[-1].bind('<Button-3>', partial(removeChip, i,j))
+				buttonPlayer[-1].grid(row=i,column=j)
+				if i<=4:
+					board[i][j]=1
+				elif i>4 and i <7:
+					board[i][j]=3
+				else:
+					board[i][j]=2
+		else:
+			if j%2 ==0:
+				buttonPlayer.append(tk.Button(frame1, image=chip3))
+				buttonPlayer[-1].bind('<Button-1>', partial(playerAction, i,j))
+				buttonPlayer[-1].bind('<Button-3>', partial(removeChip, i,j))
+				buttonPlayer[-1].grid(row=i,column=j)
+				if i<=4:
+					board[i][j]=1
+				elif i>4 and i <7:
+					board[i][j]=3	
+				else:
+					board[i][j]=2
+update()			
+#Show empty spaces
+for i in range(0,10,2):
+	for j in range(0,10,2):
+		tk.Label(frame1, bg="white",width="7", height="4").grid(row=i, column=j)
+for i in range(1,10,2):
+	for j in range(1,10,2):
+		tk.Label(frame1, bg="white",width="7", height="4").grid(row=i, column=j)
 
 
+########## MENU on the right side #####################	
+label=tk.Label(frame1, text="Position")
+label.grid(row=0, column=10)
+
+numberChosen.grid(row=1, column=10)
+#########################################################
+#Buttons: pick, drop and move
+#########################################################3
+pickButton = tk.Button(frame1,compound=TOP, text="Pick", command=pickMovement)
+pickButton.grid(row=0, column=11)
+dropButton = tk.Button(frame1,compound=TOP, text="Drop", command=dropMovement)
+dropButton.grid(row=0, column=12)
+pickButton.config(bg="#d9d9d9")	
+moveButton = tk.Button(frame1,compound=TOP, text="Move", command=move)
+moveButton.grid(row=1, column=12)	
+
+root.mainloop()
+	
+		
