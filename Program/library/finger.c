@@ -2,6 +2,7 @@
 #ifndef _ARDUINO_LIBRARY_H
 #define _ARDUINO_LIBRARY_H
 
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,9 +13,9 @@ FILE *_dev;
 char *_device;
 
 //Set device file
-int set_device(char *device ) {
+int set_device() {
 	//Open device file
-	_dev = fopen(device, "r+");
+	_dev = fopen("/dev/ardu0", "r+");
 	if (!_dev)	{
 		//Returns false if failed
 		printf("Error opening device\n");
@@ -24,13 +25,12 @@ int set_device(char *device ) {
 		//Set device if successful
 		fclose(_dev);
 		printf("Successfully opened device!\n");
-		_device = device;
 		return 1;
 	}
 }
 
 size_t write_to_device(char* string, size_t size)  {
-	_dev = fopen(_device, "r+");
+	_dev = fopen("/dev/ardu0", "r+");
 	if(_dev != NULL){
 		fwrite((const void *)(string), size, 1, _dev);
 		fclose(_dev);
