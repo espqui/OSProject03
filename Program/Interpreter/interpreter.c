@@ -87,11 +87,11 @@ int main(int argc, char *argv[]){
         if (strcmp(token,"pick\n") == 0){
             //printf("Found pick\n");
             pick();
-            sleep(10);
+            //sleep(10);
         }else if(strcmp(token,"drop\n") == 0){
             //printf("Found drop\n");
             drop();
-            sleep(10);
+            //sleep(10);
         }else if (strcmp(token,"move") == 0 || strcmp(token,"move&pick") == 0 || strcmp(token,"move&drop") == 0) {
             
             //fprintf(outputfile, "%s", token);
@@ -129,19 +129,19 @@ int main(int argc, char *argv[]){
                 if (strcmp(prev_token,"move") == 0) {
                     //printf("Found move\n");
                     move(x,y);
-                    sleep(10);
+                    //sleep(10);
                 }else if (strcmp(prev_token,"move&pick") == 0){
                     //printf("Found move&pick\n");
                     move(x,y);
-                    sleep(10);
+                    //sleep(10);
                     pick();
-                    sleep(10);
+                    //sleep(10);
                 } else if (strcmp(prev_token,"move&drop") == 0) {
                     //printf("Found move&drop\n");
                     move(x,y);
-                    sleep(10);
+                    //sleep(10);
                     drop();
-                    sleep(10);
+                    //sleep(10);
                 }
                 //fprintf(outputfile, "%s", " ");
                 //fprintf(outputfile, "%s", token);
