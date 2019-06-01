@@ -7,7 +7,7 @@
 *.mod
 *.mod.*
 *.cmd
-
+*.cache.mk
 library/main
 
 arduino.o.ur-safe
