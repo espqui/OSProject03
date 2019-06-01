@@ -1,9 +1,9 @@
 CFLAGS = -L. -lfinger.so
 CC = gcc
-all: main finger.so
+all: main libfinger.so
 	
-finger.so: 
-	${CC} -fPIC -shared finger.h -o finger.so
+libfinger.so: 
+	${CC} -fPIC -shared finger.h -o libfinger.so
 
-main: main.c finger.h finger.so
+main: main.c finger.h libfinger.so
 	${CC} ${CFLAGS} -o $@ $^

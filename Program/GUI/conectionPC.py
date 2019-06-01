@@ -1,5 +1,5 @@
 from ctypes import *
-libCalc = CDLL("./libcalci.so")
+libCalc = CDLL("../library/libfinger.so")
  
 #call C function to check connection
 libCalc.connect() 
