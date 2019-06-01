@@ -1,0 +1,12 @@
+all :
+	$(MAKE) -C driver
+	$(MAKE) -C library
+	
+.PHONY: install
+install:
+	sudo insmod driver/arduino.ko
+	sudo chmod 777 /dev/ardu0
+	
+.PHONY: clean
+clean:
+	sudo rmmod arduino
