@@ -10,3 +10,8 @@ install:
 .PHONY: clean
 clean:
 	sudo rmmod arduino
+
+
+.PHONY: run
+run:
+	python3 GUI/connectionPC.py
