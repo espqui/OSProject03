@@ -1,6 +1,7 @@
 all :
 	$(MAKE) -C driver
 	$(MAKE) -C library
+	$(MAKE) -C Interpreter
 	
 .PHONY: install
 install:
@@ -21,3 +22,7 @@ run:
 .PHONY: gui
 gui:
 	cd GUI/ && python3 GUI.py
+
+.PHONY: inter
+inter:
+	cd Interpreter && ./interpreter -c "configuration"
