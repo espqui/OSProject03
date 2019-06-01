@@ -33,6 +33,7 @@ size_t write_to_device(char* string, size_t size)  {
 	_dev = fopen("/dev/ardu0", "r+");
 	if(_dev != NULL){
 		fwrite((const void *)(string), size, 1, _dev);
+		printf("%s",string);
 		fclose(_dev);
 		return size;
 	}
@@ -62,6 +63,4 @@ void drop()  {
 	sprintf(message, "d\n");
 	write_to_device(message,2);
 }
-
-
 #endif

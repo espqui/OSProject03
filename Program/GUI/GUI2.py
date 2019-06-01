@@ -25,9 +25,6 @@ def playerAction(i,j,event):
 	#print("pick value",pick)
 	pickAux=pick
 	if(pick==1 and (board[i,j]==1 or board[i,j]==2)):
-		libFinger.move(i+1,j+1)	
-		time.sleep(10)
-		libFinger.pick()
 		if(board[i,j]==1):
 			currentPlayer=1
 		elif(board[i,j]==2):
@@ -44,9 +41,7 @@ def playerAction(i,j,event):
 		#varRand = libDriver.randNum()
 		#print("Random Number:", varRand)
 	    ################################
-		libFinger.move(i+1,j+1)	
-		time.sleep(10)
-		libFinger.drop()
+
 		dropPos=(i,j)
 	
 		pick=1
