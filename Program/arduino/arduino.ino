@@ -231,6 +231,7 @@ void serialEvent() {
     inputString += inChar;
     // if the incoming character is a newline, set a flag
     // so the main loop can do something about it:
+    //if (inChar != 'p' || inChar != 'd' || inChar != 'm' || inChar != '1' || inChar != '2' || inChar != '3' ||inChar != '4' ||inChar != '5' ||inChar != '6' ||inChar != '7' ||inChar != '8' ||inChar != '9' ||inChar != ',' ) {
     if (inChar == '\n') {
       stringComplete = true;
     } 
