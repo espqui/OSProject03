@@ -1,6 +1,17 @@
 #include <VarSpeedServo.h> 
 #include <math.h>
 
+struct polar{
+  double radius;
+  double angle;
+};
+struct servos{
+  int servo1;
+  int servo2;
+  int servo3;
+  int servo4;
+};
+
 VarSpeedServo servoBase;
 VarSpeedServo servoInferior; 
 VarSpeedServo servoVertical; 
@@ -8,6 +19,7 @@ VarSpeedServo servoPinzas;
 
 double lastRadius = 7;
 int direction = 1;
+int tempdir = 1;
 
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
@@ -17,10 +29,10 @@ const int pinInferior =10 ;// subir y bajar
 const int pinVertical = 9;// brazo vertical
 const int pinPinzas = 8;// pienzas
 
-int lastBase = 0;//azul
-int lastInferior = 0 ;// subir y bajar
-int lastVertical = 0;// brazo vertical
-int lastPinzas = 0;// pienzas
+struct servos lastPos;
+#define up 15
+int level = up;
+
 
 
 #define X_OFFSET  5.5
@@ -39,16 +51,6 @@ int lastPinzas = 0;// pienzas
 #define SERVO3_OFFSET 56.27014
 #define SERVO4_OFFSET 137.9164
 
-struct polar{
-  double radius;
-  double angle;
-};
-struct servos{
-  int servo1;
-  int servo2;
-  int servo3;
-  int servo4;
-};
 double radius(int x,int y){
     return sqrt(x*x+ y*y);
 }
@@ -102,27 +104,39 @@ void moveServos(struct servos angles, int speed)
 {
     int extra1 = getValue(inputString,',',2).toInt();
     int extra2 = getValue(inputString,',',3).toInt();
-    
-    if(direction){ //alejandome
+    Serial.print("Move to ");
+    Serial.print (angles.servo1); 
+    Serial.print(angles.servo2);
+    Serial.print(angles.servo3);
+    Serial.println(angles.servo4);
+    if(direction == 1){ //alejandome
     
         servoVertical.write(50,speed,true);
         servoPinzas.write(angles.servo4,speed,true);
         servoInferior.write(70,speed,true);
         servoBase.write(angles.servo1,speed,true); 
         servoInferior.write(angles.servo2,speed,true);
-        servoVertical.write(angles.servo3,speed,true);
+        servoVertical.write(angles.servo3 - level,speed,true);
     
     
     }
 
-    else{ //acercandome
+    else if(direction == 0){ //acercandome
         servoVertical.write(50,speed,true);
         servoPinzas.write(angles.servo4,speed,true);
         servoInferior.write(angles.servo2,speed,true);
         servoBase.write(angles.servo1,speed,true); 
-        servoVertical.write(angles.servo3,speed,true);
+        servoVertical.write(angles.servo3 - level,speed,true);
     
     }
+    else if(direction == -1){ //solo mover
+        servoPinzas.write(angles.servo4,speed,true);
+        servoInferior.write(angles.servo2,speed,true);
+        servoBase.write(angles.servo1,speed,true); 
+        servoVertical.write(angles.servo3 - level,speed,true);
+    
+    }
+    lastPos = angles;
 }
 void setup() {
   // initialize serial:
@@ -159,20 +173,42 @@ String getValue(String data, char separator, int index)
 void loop() {
   // print the string when a newline arrives:
   if (stringComplete) {
-    Serial.println(inputString); 
     char option = inputString.charAt(0);
+    Serial.println(option);
     inputString.remove(0,1);
-    switch (option) {
-        case 'm':
-          struct servos anglesin = toServos(getValue(inputString,',',0).toInt(),getValue(inputString,',',1).toInt());
-          moveServos(anglesin,15);
-          break;
-        case 'p':
-          break;
-        case 'd':
-          break;
-        default:
-          break;
+    if(option == 'm')
+    {
+      Serial.println("Move");
+      struct servos anglesin = toServos(getValue(inputString,',',0).toInt(),getValue(inputString,',',1).toInt());
+      moveServos(anglesin,15);
+    }
+    else if(option == 'p')
+    {
+      tempdir = direction;
+      direction = -1;
+      Serial.println("Pick");
+      level = 0;
+      digitalWrite(2, HIGH);
+      moveServos(lastPos,15);
+      level = up;
+      moveServos(lastPos,15);
+      direction = tempdir;
+    }
+    else if(option == 'd')
+    { 
+            tempdir = direction;
+            direction = -1;
+            Serial.println("Drop");
+            level = 0;
+            moveServos(lastPos,15);
+            digitalWrite(2, LOW);
+            level = up;
+            moveServos(lastPos,15);
+            direction = tempdir;
+    }
+    else{
+          Serial.print("Command not detected: ");
+          Serial.println(inputString);
     }   
     
     // clear the string:
