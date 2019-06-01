@@ -4,6 +4,7 @@ all :
 	
 .PHONY: install
 install:
+	sudo rmmod cdc-acm
 	sudo insmod driver/arduino.ko
 	sudo chmod 777 /dev/ardu0
 	
