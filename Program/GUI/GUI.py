@@ -5,17 +5,27 @@ from tkinter import IntVar
 from functools import partial
 import numpy as np
 
+
+from ctypes import *
+libDriver = CDLL("./libcalci.so")
+ 
+#call C function to check connection
+libDriver.connect() 
+
 #####################################################
 #All player's movements are developed in this function
 ###################################################
 def playerAction(i,j,event):
 	global pick,pickPos,currentPlayer, board
-	print("pick value",pick)
+	#print("pick value",pick)
 	pickAux=pick
 	if(pick==1 and (board[i,j]==1 or board[i,j]==2)):
-	#################################
-	#pick chip in i,j position
-	################################
+		#################################
+		#pick chip in i,j position
+		#libDriver.methodPick(i,j)
+		#varRand = libDriver.randNum()
+		#print("Random Number:", varRand)
+		################################
 		if(board[i,j]==1):
 			currentPlayer=1
 		elif(board[i,j]==2):
@@ -23,12 +33,15 @@ def playerAction(i,j,event):
 		pickPos=(i,j)
 		pick=0
 		board[i,j]=3
-		print("picked",pickPos)
+		#print("picked",pickPos)
 		update()
 	elif(pick==0 and board[i,j]==3):
-	#################################
-	#drop chip on i,j position
-	################################
+		#################################
+		#drop chip on i,j position
+		#libDriver.methodDrop(i,j)
+		#varRand = libDriver.randNum()
+		#print("Random Number:", varRand)
+	    ################################
 		dropPos=(i,j)
 		pick=1
 		if(currentPlayer==1):
@@ -126,9 +139,9 @@ board=np.zeros([10,10],dtype = int)
 #initBoard
 frame1 = tk.Frame(root)
 frame1.pack(side=tk.TOP, fill=tk.X)
-chip1 = tk.PhotoImage(file="chip1.png")#chip of player 1
-chip2 = tk.PhotoImage(file="chip2.png")#chip of player 2
-chip3 = tk.PhotoImage(file="free.png")#empty space
+chip1 = tk.PhotoImage(file="./pictures/chip1.png")#chip of player 1
+chip2 = tk.PhotoImage(file="./pictures/chip2.png")#chip of player 2
+chip3 = tk.PhotoImage(file="./pictures/free.png")#empty space
 
 buttonPlayer = list() # Each position on the board is a button
 pick=1#0drop, 1, pick, -1 invalid field was selected
