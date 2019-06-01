@@ -1,0 +1,15 @@
+.vscode/
+*.ko
+*.o
+*.o.d
+*.order
+*.symvers
+*.mod
+*.mod.*
+*.cmd
+
+library/main
+
+arduino.o.ur-safe
+skeleton/dd
+skeleton/1
