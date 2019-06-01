@@ -37,7 +37,9 @@ static ssize_t device_write(struct file *file, const char __user *user_buffer, s
 
 /* table of devices that work with this driver */
 static struct usb_device_id id_table[] = {
-	{ USB_DEVICE(VENDOR_ID, PRODUCT_ID) },
+	{ USB_DEVICE(VENDOR_ID, 0x0043) },   // Arduino UNO
+	{ USB_DEVICE(VENDOR_ID, 0x0010) },  // Arduino MEGA
+	{ USB_DEVICE(VENDOR_ID, 0x003d) }, // Arduino DUE
 	{ },
 };
 MODULE_DEVICE_TABLE(usb, id_table);

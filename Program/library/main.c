@@ -1,4 +1,3 @@
-#include <finger.h>
 
 int main(void)
 {
