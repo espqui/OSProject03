@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "../library/finger.h"
+#include "../library/finger.c"
 
 void lower_string(char s[]) {
    int c = 0;

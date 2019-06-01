@@ -5,8 +5,12 @@ from tkinter import IntVar
 from functools import partial
 import numpy as np
 
-
 from ctypes import *
+import os 
+root_path = os.path.dirname(os.path.realpath(__file__))
+
+libFinger = CDLL(root_path + "/../library/libfinger.so")
+
 libDriver = CDLL("./libcalci.so")
  
 #call C function to check connection
